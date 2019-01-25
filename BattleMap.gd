@@ -34,15 +34,16 @@ func _ready():
 	
 
 func _onUnitSelect(gridloc, MovRange, AttRange):
-	NewArray=SquareNodes.duplicate()
 	print(str(SquareNodes[1][0]["dist"]))
 	var MoveArray=rangefind(gridloc,MovRange,SquareNodes.duplicate())
 	var AttackArray=rangefind(gridloc,AttRange+MovRange,SquareNodes.duplicate())
 	print(str(SquareNodes[1][0]["dist"]))
-
-	#for i in AttackArray:
-	#	if i in MoveArray:
-	#		AttackArray.erase(i)
+	var TempAttack = []
+	for i in AttackArray: #Remove everything in MoveArray from AttackArray
+		if not i in MoveArray:
+			TempAttack.append(i)
+			print("Erasing ", str(i))
+	AttackArray=TempAttack
 	print("Attack Array is: ", str(AttackArray))
 	print("Move Array is: ", str(MoveArray))
 	
@@ -63,6 +64,9 @@ func _unhandled_input(event): #On an event not handled by anything else
 				
 func rangefind(stloc, gridrange, Nodes): #Start Location and Range to find
 	print(str(Nodes[1][0]["dist"]))
+	for x in Nodes:
+		for y in x:
+			y["dist"]=9999
 	var toExplore=[]
 	var inRange=[]
 	Nodes[stloc.x][stloc.y]["dist"]=0
@@ -94,6 +98,9 @@ func rangefind(stloc, gridrange, Nodes): #Start Location and Range to find
 								inRange.append(Vector2(i.x,i.y+modnum))
 			toExplore.erase(i)
 		curr_range+=1
+	for x in Nodes:
+		for y in x:
+			y["dist"]=9999
 	return inRange
 			
 			
