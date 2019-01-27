@@ -1,10 +1,11 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://Battletest.gd" type="Script" id=1]
 [ext_resource path="res://BATTLEMAPTILESET.tres" type="TileSet" id=2]
 [ext_resource path="res://BattleMap.gd" type="Script" id=3]
-[ext_resource path="res://GridContainer.gd" type="Script" id=4]
-[ext_resource path="res://Unitscript.tscn" type="PackedScene" id=5]
+[ext_resource path="res://Tilesets/BattleOverlays.tres" type="TileSet" id=4]
+[ext_resource path="res://GridContainer.gd" type="Script" id=5]
+[ext_resource path="res://Unitscript.tscn" type="PackedScene" id=6]
 
 [node name="BattleMain" type="Node2D" index="0"]
 
@@ -89,6 +90,28 @@ size_flags_vertical = 1
 color = Color( 1, 1, 1, 1 )
 _sections_unfolded = [ "Rect", "Visibility" ]
 
+[node name="Overlays" type="TileMap" parent="BattleMap" index="3"]
+
+modulate = Color( 1, 1, 1, 0.479373 )
+mode = 0
+tile_set = ExtResource( 4 )
+cell_size = Vector2( 64, 64 )
+cell_quadrant_size = 16
+cell_custom_transform = Transform2D( 1, 0, 0, 1, 0, 0 )
+cell_half_offset = 2
+cell_tile_origin = 0
+cell_y_sort = false
+cell_clip_uv = false
+collision_use_kinematic = false
+collision_friction = 1.0
+collision_bounce = 0.0
+collision_layer = 1
+collision_mask = 1
+occluder_light_mask = 1
+format = 1
+tile_data = PoolIntArray(  )
+_sections_unfolded = [ "Visibility" ]
+
 [node name="BattleGrid" type="GridContainer" parent="." index="1"]
 
 anchor_left = 0.0
@@ -104,11 +127,11 @@ mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 1
 columns = 10
-script = ExtResource( 4 )
+script = ExtResource( 5 )
 
 [node name="Units" type="Node" parent="." index="2"]
 
-[node name="UnitWarrior" parent="Units" index="0" instance=ExtResource( 5 )]
+[node name="UnitWarrior" parent="Units" index="0" instance=ExtResource( 6 )]
 
 [node name="TileMap" type="TileMap" parent="." index="3"]
 
