@@ -1,11 +1,10 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://Battletest.gd" type="Script" id=1]
 [ext_resource path="res://BATTLEMAPTILESET.tres" type="TileSet" id=2]
 [ext_resource path="res://BattleMap.gd" type="Script" id=3]
 [ext_resource path="res://Tilesets/BattleOverlays.tres" type="TileSet" id=4]
-[ext_resource path="res://GridContainer.gd" type="Script" id=5]
-[ext_resource path="res://Unitscript.tscn" type="PackedScene" id=6]
+[ext_resource path="res://Unitscript.tscn" type="PackedScene" id=5]
 
 [node name="BattleMain" type="Node2D" index="0"]
 
@@ -112,28 +111,17 @@ format = 1
 tile_data = PoolIntArray(  )
 _sections_unfolded = [ "Visibility" ]
 
-[node name="BattleGrid" type="GridContainer" parent="." index="1"]
+[node name="Units" type="Node" parent="." index="1"]
 
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
-margin_left = -390.0
-margin_bottom = 260.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-mouse_filter = 1
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 1
-columns = 10
-script = ExtResource( 5 )
+[node name="Player" type="Node" parent="Units" index="0"]
 
-[node name="Units" type="Node" parent="." index="2"]
+[node name="UnitWarrior" parent="Units/Player" index="0" instance=ExtResource( 5 )]
 
-[node name="UnitWarrior" parent="Units" index="0" instance=ExtResource( 6 )]
+[node name="Enemy" type="Node" parent="Units" index="1"]
 
-[node name="TileMap" type="TileMap" parent="." index="3"]
+[node name="Unit" parent="Units/Enemy" index="0" instance=ExtResource( 5 )]
+
+[node name="TileMap" type="TileMap" parent="." index="2"]
 
 mode = 0
 tile_set = ExtResource( 2 )
@@ -152,5 +140,46 @@ collision_mask = 1
 occluder_light_mask = 1
 format = 1
 tile_data = PoolIntArray(  )
+
+[node name="MarginContainer" type="MarginContainer" parent="." index="3"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_right = 8.0
+margin_bottom = 40.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+
+[node name="Camera2D" type="Camera2D" parent="." index="4"]
+
+position = Vector2( 120, 70 )
+anchor_mode = 1
+rotating = false
+current = true
+zoom = Vector2( 1, 1 )
+limit_left = -10000000
+limit_top = -10000000
+limit_right = 10000000
+limit_bottom = 10000000
+limit_smoothed = false
+drag_margin_h_enabled = true
+drag_margin_v_enabled = true
+smoothing_enabled = false
+smoothing_speed = 5.0
+offset_v = 0.0
+offset_h = 0.0
+drag_margin_left = 0.2
+drag_margin_top = 0.2
+drag_margin_right = 0.2
+drag_margin_bottom = 0.2
+editor_draw_screen = true
+editor_draw_limits = false
+editor_draw_drag_margin = false
 
 

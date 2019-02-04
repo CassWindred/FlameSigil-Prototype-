@@ -21,9 +21,17 @@ var sizey=30
 onready var square_nodes = []
 onready var selectsquare=get_node("SelectSquare")
 
+var move_array = []
+var attack_array = []
+var selected
+var factions = []
+var units = []
 
+signal newTurn()
 
 func _ready():
+		# Called when the node is added to the scene for the first time.
+	# Initialization here
 	#Initialise Tile Constants
 	TILE_TREE=tile_set.find_tile_by_name("--Tree")
 	TILE_GRASS=tile_set.find_tile_by_name("Grass1")
@@ -35,13 +43,15 @@ func _ready():
 	BLUE_OL=OL.tile_set.find_tile_by_name("Blue")
 	LIGHTBLUE_OL=OL.tile_set.find_tile_by_name("LightBlue")
 	
+	#Initialise Factions and units
+	factions=get_parent().get_node("Units").get_children()
+	for i in factions:
+		for j in i.get_children():
+			units.append(j)
 	
 	
-	
-	print(str(RED_OL))
-	# Called when the node is added to the scene for the first time.
-	# Initialization here
-	for instance in get_parent().get_node("Units").get_children():
+
+	for instance in units:
 		instance.connect("unitSelect", self, "_on_unit_select")
 
 	#get_parent().get_node("Units").get_node("UnitWarrior").connect("unitSelect", self, "_onUnitSelect")
@@ -61,44 +71,70 @@ func _ready():
 			
 	
 
-func _on_unit_select(gridloc, MovRange, AttRange):
-	print(str(square_nodes[1][0]["dist"]))
-	var move_array=rangefind(gridloc,MovRange,square_nodes.duplicate())
-	var attack_array=rangefind(gridloc,AttRange+MovRange,square_nodes.duplicate())
-	print(str(square_nodes[1][0]["dist"]))
+func _on_unit_select(gridloc, MovRange, AttRange, unit):
+	print(str(MovRange))
+	move_array=rangefind(gridloc,MovRange,square_nodes.duplicate())
+	attack_array=rangefind(gridloc,AttRange+MovRange,square_nodes.duplicate())
+	#print(str(square_nodes[1][0]["dist"]))
 	var TempAttack = []
+	
 	for i in attack_array: #Remove everything in move_array from attack_array
 		if not i in move_array:
 			TempAttack.append(i)
-			print("Erasing ", str(i))
 	attack_array=TempAttack
+	
 	print("Attack Array is: ", str(attack_array))
 	print("Move Array is: ", str(move_array))
 	for i in move_array:
 		OL.set_cellv(i, BLUE_OL) #Set in range tiles as blue
 	for i in attack_array:
 		OL.set_cellv(i, RED_OL)
+	selected=unit
+		
+		
+func clearmove(): #Clears the overlay and the attack and move array
+	attack_array = []
+	move_array = []
+	OL.clear()
+	
+func moveselected(target):
+	selected.rect_global_position=map_to_world(target)
+	selected.MovRemain += -(square_nodes[target.x][target.y]["dist"])
+	clearmove()
+	
+func canselectedattack(target): #Returns true if the target is a valid location to attack
+	return false
+	
+func selectedattack(target):
+	pass
+
 	
 func _unhandled_input(event): #On an event not handled by anything else
 	
 	if event is InputEvent:
 		
 		if Input.is_action_just_pressed("ui_click"):
-			OL.clear() #Clear the overlay
+			
 			var gridchosen
 			gridchosen=world_to_map(get_global_mouse_position()) #Finds which grid tile the mouse is at
-			print(str(gridchosen))
-			selectsquare.rect_global_position=map_to_world(gridchosen)
-			selectsquare.show()
-			var tile=get_cellv(gridchosen)
-			print("Tile index for "+str(gridchosen) + " is " + str(tile))
-			if square_nodes[gridchosen.x][gridchosen.y]["passable"]==true:
-				print("Passable")
+			if gridchosen in move_array:
+				moveselected(gridchosen)
+			elif canselectedattack(gridchosen):
+				selectedattack(gridchosen)
 			else:
-				print("Not Passable")
+				clearmove() #Clear the overlay and arrays
+				print(str(gridchosen))
+				selectsquare.rect_global_position=map_to_world(gridchosen)
+				selectsquare.show()
+				var tile=get_cellv(gridchosen)
+				print("Tile index for "+str(gridchosen) + " is " + str(tile))
+				if square_nodes[gridchosen.x][gridchosen.y]["passable"]==true:
+					print("Passable")
+				else:
+					print("Not Passable")
 				
 func rangefind(stloc, gridrange, Nodes): #Start Location and Range to find
-	print(str(Nodes[1][0]["dist"]))
+	#print(str(Nodes[1][0]["dist"]))
 	for x in Nodes:
 		for y in x:
 			y["dist"]=9999
@@ -126,7 +162,7 @@ func rangefind(stloc, gridrange, Nodes): #Start Location and Range to find
 							toExplore.append(Vector2(i.x+modnum,i.y))
 							Nodes[i.x+modnum][i.y]["dist"]=Nodes[i.x][i.y]["dist"]+1
 							if Nodes[i.x+modnum][i.y]["dist"]<=gridrange:
-								print("Adding to inRange")
+								#print("Adding to inRange")
 								inRange.append(Vector2(i.x+modnum,i.y))
 								
 				if not (i.y+modnum>=sizey or i.y+modnum<0): #Check that location is within bounds
@@ -139,13 +175,11 @@ func rangefind(stloc, gridrange, Nodes): #Start Location and Range to find
 								inRange.append(Vector2(i.x,i.y+modnum))
 			toExplore.erase(i)
 		curr_range+=1
-	for x in Nodes:
-		for y in x:
-			y["dist"]=9999
 	return inRange
 			
 			
-	
+func newturn():
+	emit_signal("newTurn")
 
 #func _process(delta):
 #	# Called every frame. Delta is time since last frame.

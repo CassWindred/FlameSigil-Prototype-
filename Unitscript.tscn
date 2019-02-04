@@ -54,7 +54,9 @@ align = 1
 script = ExtResource( 2 )
 _sections_unfolded = [ "Margin", "Rect" ]
 
-[node name="Node2D" type="Node2D" parent="." index="1"]
+[node name="Position2D" type="Position2D" parent="." index="1"]
+
+[node name="Node2D" type="Node2D" parent="." index="2"]
 
 position = Vector2( 21, 21 )
 z_index = 1
