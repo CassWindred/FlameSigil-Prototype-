@@ -12,7 +12,7 @@ use_filter = false
 font_data = ExtResource( 3 )
 _sections_unfolded = [ "Font", "Settings" ]
 
-[node name="Unit" type="Panel"]
+[node name="Unit" type="Panel" index="0"]
 
 modulate = Color( 1, 0, 0, 1 )
 anchor_left = 0.0
@@ -29,6 +29,7 @@ size_flags_horizontal = 1
 size_flags_vertical = 1
 script = ExtResource( 1 )
 _sections_unfolded = [ "Anchor", "Rect", "Theme", "Visibility" ]
+unitID = "Warrior"
 
 [node name="Button" type="Button" parent="." index="0"]
 

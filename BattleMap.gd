@@ -27,7 +27,8 @@ var selected
 var factions = []
 var units = []
 
-signal newTurn()
+signal newTurn() #Autolinked to EndTurnButton
+
 
 func _ready():
 		# Called when the node is added to the scene for the first time.
@@ -72,6 +73,7 @@ func _ready():
 	
 
 func _on_unit_select(gridloc, MovRange, AttRange, unit):
+	clearmove()
 	print(str(MovRange))
 	move_array=rangefind(gridloc,MovRange,square_nodes.duplicate())
 	attack_array=rangefind(gridloc,AttRange+MovRange,square_nodes.duplicate())
@@ -179,7 +181,10 @@ func rangefind(stloc, gridrange, Nodes): #Start Location and Range to find
 			
 			
 func newturn():
+	for instance in units:
+		instance.newturn()
 	emit_signal("newTurn")
+	clearmove()
 
 #func _process(delta):
 #	# Called every frame. Delta is time since last frame.
@@ -189,3 +194,10 @@ func newturn():
 
 
 
+
+
+
+
+
+func _on_EndTurnButton_pressed():
+	newturn()
