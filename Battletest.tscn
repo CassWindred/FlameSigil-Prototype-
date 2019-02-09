@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://Battletest.gd" type="Script" id=1]
 [ext_resource path="res://Resources/End Turn.png" type="Texture" id=2]
@@ -7,6 +7,7 @@
 [ext_resource path="res://BattleMap.gd" type="Script" id=5]
 [ext_resource path="res://Tilesets/BattleOverlays.tres" type="TileSet" id=6]
 [ext_resource path="res://Unitscript.tscn" type="PackedScene" id=7]
+[ext_resource path="res://BattleCamera.gd" type="Script" id=8]
 
 [node name="BattleMain" type="Node2D" index="0"]
 
@@ -167,42 +168,17 @@ _sections_unfolded = [ "Visibility" ]
 
 [node name="Player" type="Node" parent="Units" index="0"]
 
-[node name="UnitWarrior" parent="Units/Player" index="0" instance=ExtResource( 7 )]
+[node name="Mercenary" parent="Units/Player" index="0" instance=ExtResource( 7 )]
 
 [node name="Enemy" type="Node" parent="Units" index="1"]
 
-[node name="Unit" parent="Units/Enemy" index="0" instance=ExtResource( 7 )]
+[node name="Mercenary" parent="Units/Enemy" index="0" instance=ExtResource( 7 )]
 
 editor/display_folded = true
 margin_left = 70.0
 margin_right = 134.0
-unitID = "Spearman"
 
-[node name="W" parent="Units/Enemy/Unit/Node2D" index="0"]
-
-text = "E"
-
-[node name="TileMap" type="TileMap" parent="." index="3"]
-
-mode = 0
-tile_set = ExtResource( 4 )
-cell_size = Vector2( 64, 64 )
-cell_quadrant_size = 16
-cell_custom_transform = Transform2D( 1, 0, 0, 1, 0, 0 )
-cell_half_offset = 2
-cell_tile_origin = 0
-cell_y_sort = false
-cell_clip_uv = false
-collision_use_kinematic = false
-collision_friction = 1.0
-collision_bounce = 0.0
-collision_layer = 1
-collision_mask = 1
-occluder_light_mask = 1
-format = 1
-tile_data = PoolIntArray(  )
-
-[node name="Camera2D" type="Camera2D" parent="." index="4"]
+[node name="BattleCamera" type="Camera2D" parent="." index="3"]
 
 position = Vector2( 320, 630 )
 anchor_mode = 1
@@ -214,8 +190,8 @@ limit_top = -10000000
 limit_right = 10000000
 limit_bottom = 10000000
 limit_smoothed = false
-drag_margin_h_enabled = true
-drag_margin_v_enabled = true
+drag_margin_h_enabled = false
+drag_margin_v_enabled = false
 smoothing_enabled = false
 smoothing_speed = 5.0
 offset_v = 0.0
@@ -227,8 +203,8 @@ drag_margin_bottom = 0.2
 editor_draw_screen = true
 editor_draw_limits = false
 editor_draw_drag_margin = false
+script = ExtResource( 8 )
 
 [connection signal="pressed" from="CanvasLayer/Top Gui/EndTurnButton" to="BattleMap" method="_on_EndTurnButton_pressed"]
 
 
-[editable path="Units/Enemy/Unit"]

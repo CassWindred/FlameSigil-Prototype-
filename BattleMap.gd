@@ -85,8 +85,8 @@ func _on_unit_select(gridloc, MovRange, AttRange, unit):
 			TempAttack.append(i)
 	attack_array=TempAttack
 	
-	print("Attack Array is: ", str(attack_array))
-	print("Move Array is: ", str(move_array))
+	#print("Attack Array is: ", str(attack_array))
+	#print("Move Array is: ", str(move_array))
 	for i in move_array:
 		OL.set_cellv(i, BLUE_OL) #Set in range tiles as blue
 	for i in attack_array:
@@ -125,15 +125,15 @@ func _unhandled_input(event): #On an event not handled by anything else
 				selectedattack(gridchosen)
 			else:
 				clearmove() #Clear the overlay and arrays
-				print(str(gridchosen))
+				#print(str(gridchosen))
 				selectsquare.rect_global_position=map_to_world(gridchosen)
 				selectsquare.show()
 				var tile=get_cellv(gridchosen)
-				print("Tile index for "+str(gridchosen) + " is " + str(tile))
-				if square_nodes[gridchosen.x][gridchosen.y]["passable"]==true:
-					print("Passable")
-				else:
-					print("Not Passable")
+				#print("Tile index for "+str(gridchosen) + " is " + str(tile))
+				#if square_nodes[gridchosen.x][gridchosen.y]["passable"]==true:
+				#	print("Passable")
+				#else:
+				#	print("Not Passable")
 				
 func rangefind(stloc, gridrange, Nodes): #Start Location and Range to find
 	#print(str(Nodes[1][0]["dist"]))
