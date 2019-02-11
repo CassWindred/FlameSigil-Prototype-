@@ -16,9 +16,10 @@ config/icon="res://icon.png"
 
 [display]
 
-window/size/width=750
+window/size/width=748
 window/size/height=1334
 window/handheld/emulate_touchscreen=true
+window/stretch/shrink="1"
 
 [input]
 

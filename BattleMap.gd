@@ -37,7 +37,7 @@ var recentclickdown #Contains the square most recently clicked down on, for use 
 func _ready():
 	
 	#Initialise Factions and units
-	factions=get_parent().get_node("Units").get_children()
+	factions=get_parent().get_node("Factions").get_children()
 	for i in factions:
 		for j in i.get_children():
 			units.append(j)
