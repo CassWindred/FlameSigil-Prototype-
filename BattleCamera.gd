@@ -13,7 +13,7 @@ func _ready():
 	
 func _unhandled_input(event):
 	if event is InputEventScreenDrag:
-		print(-event.relative)
+		#print(-event.relative)
 		dotranslate(-event.relative*dragspeed)
 		
 	

@@ -5,15 +5,15 @@ extends TileMap
 # var b = "textvar"
 
 #Standard Tiles
-var TILE_TREE
-var TILE_GRASS
+onready var TILE_TREE = tile_set.find_tile_by_name("--Tree")
+onready var TILE_GRASS = tile_set.find_tile_by_name("Grass1")
 
 #Overlay Tiles (OL=OVERLAY)
-var OL #This will be a shortening for Overlays
-var RED_OL
-var GREEN_OL
-var BLUE_OL
-var LIGHTBLUE_OL
+onready var OL = get_node("Overlays") #This will be a shortening for Overlays
+onready var RED_OL =OL.tile_set.find_tile_by_name("Red")
+onready var GREEN_OL =OL.tile_set.find_tile_by_name("Green")
+onready var BLUE_OL =OL.tile_set.find_tile_by_name("Blue")
+onready var LIGHTBLUE_OL =OL.tile_set.find_tile_by_name("LightBlue")
 
 signal unitSelect(gridloc, MovRange, AttRange) 
 var sizex=20
@@ -29,20 +29,10 @@ var units = []
 
 signal newTurn() #Autolinked to EndTurnButton
 
+var recentclickdown #Contains the square most recently clicked down on, for use when clicked up
+
 
 func _ready():
-		# Called when the node is added to the scene for the first time.
-	# Initialization here
-	#Initialise Tile Constants
-	TILE_TREE=tile_set.find_tile_by_name("--Tree")
-	TILE_GRASS=tile_set.find_tile_by_name("Grass1")
-	
-	#Initialise overlay tile constants
-	OL=get_node("Overlays")
-	RED_OL=OL.tile_set.find_tile_by_name("Red")
-	GREEN_OL=OL.tile_set.find_tile_by_name("Green")
-	BLUE_OL=OL.tile_set.find_tile_by_name("Blue")
-	LIGHTBLUE_OL=OL.tile_set.find_tile_by_name("LightBlue")
 	
 	#Initialise Factions and units
 	factions=get_parent().get_node("Units").get_children()
@@ -112,11 +102,11 @@ func selectedattack(target):
 
 	
 func _unhandled_input(event): #On an event not handled by anything else
-	
-	if event is InputEvent:
-		
+	if event is InputEventMouseButton or event is InputEventScreenTouch:
 		if Input.is_action_just_pressed("ui_click"):
-			
+			if event.pressed==true:
+				recentclickdown=world_to_map(get_global_mouse_position())
+		elif Input.is_action_just_released("ui_click") and recentclickdown==world_to_map(get_global_mouse_position()):
 			var gridchosen
 			gridchosen=world_to_map(get_global_mouse_position()) #Finds which grid tile the mouse is at
 			if gridchosen in move_array:
@@ -125,10 +115,8 @@ func _unhandled_input(event): #On an event not handled by anything else
 				selectedattack(gridchosen)
 			else:
 				clearmove() #Clear the overlay and arrays
-				#print(str(gridchosen))
-				selectsquare.rect_global_position=map_to_world(gridchosen)
-				selectsquare.show()
-				var tile=get_cellv(gridchosen)
+				OL.set_cellv(gridchosen, GREEN_OL)
+				#var tile=get_cellv(gridchosen)
 				#print("Tile index for "+str(gridchosen) + " is " + str(tile))
 				#if square_nodes[gridchosen.x][gridchosen.y]["passable"]==true:
 				#	print("Passable")
