@@ -4,9 +4,10 @@ extends Panel
 # var a = 2
 # var b = "textvar"
 signal unitSelect(gridloc, MovRange, AttRange)
-var MovRange = 5
-var AttRange = 1
-var MovRemain = 5
+var MovRange
+var AttRange=1
+var MovRemain
+var HPRemain
 var stats = {}
 export (String) var unitID = "Mercenary"
 
@@ -20,6 +21,9 @@ func _ready():
 	BattleMap.connect("newTurn", self, "newturn")
 	LabelVar.text=unitID[0]
 	getstatsfromID()
+	MovRemain=stats["Mov"]
+	HPRemain=stats["HP"]
+	
 	
 	
 	pass
@@ -35,7 +39,7 @@ func getstatsfromID():
 			if not len(words)==2:
 				print("Incorrect formatting of UnitID("+unitID+"), word count for line incorrect, error E0002")
 			else:
-				stats[words[0]]=words[1]
+				stats[words[0]]=int(words[1])
 		
 	else:
 		print("FILE NOT FOUND ERROR IN UnitBase.gd, error E0001")
@@ -47,8 +51,8 @@ func getstatsfromID():
 #	# Update game logic here.
 #	pass
 func newturn():
-	MovRemain=MovRange
+	MovRemain=stats["Mov"]
 
 func _on_Button_pressed():
-	emit_signal("unitSelect",BattleMap.world_to_map(get_global_mouse_position()),MovRemain,AttRange, self)
+	emit_signal("unitSelect",BattleMap.world_to_map(get_global_mouse_position()), self)
 	return

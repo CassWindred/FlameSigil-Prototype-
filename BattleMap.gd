@@ -19,7 +19,7 @@ signal unitSelect(gridloc, MovRange, AttRange)
 var sizex=20
 var sizey=30
 onready var square_nodes = []
-onready var selectsquare=get_node("SelectSquare")
+onready var UnitGui = get_node("../CanvasLayer/UnitGui")
 
 var move_array = []
 var attack_array = []
@@ -28,6 +28,8 @@ var factions = []
 var units = []
 
 signal newTurn() #Autolinked to EndTurnButton
+signal anyUnitSelected()
+signal unitDeselect()
 
 var recentclickdown #Contains the square most recently clicked down on, for use when clicked up
 
@@ -62,9 +64,10 @@ func _ready():
 			
 	
 
-func _on_unit_select(gridloc, MovRange, AttRange, unit):
-	clearmove()
-	print(str(MovRange))
+func _on_unit_select(gridloc, unit):
+	deselect()
+	var AttRange=unit.AttRange
+	var MovRange=unit.MovRemain
 	move_array=rangefind(gridloc,MovRange,square_nodes.duplicate())
 	attack_array=rangefind(gridloc,AttRange+MovRange,square_nodes.duplicate())
 	#print(str(square_nodes[1][0]["dist"]))
@@ -82,17 +85,19 @@ func _on_unit_select(gridloc, MovRange, AttRange, unit):
 	for i in attack_array:
 		OL.set_cellv(i, RED_OL)
 	selected=unit
+	emit_signal("anyUnitSelected",unit)
 		
 		
-func clearmove(): #Clears the overlay and the attack and move array
+func deselect(): #Clears the overlay and the attack and move array
 	attack_array = []
 	move_array = []
 	OL.clear()
+	emit_signal("unitDeselect")
 	
 func moveselected(target):
 	selected.rect_global_position=map_to_world(target)
 	selected.MovRemain += -(square_nodes[target.x][target.y]["dist"])
-	clearmove()
+	deselect()
 	
 func canselectedattack(target): #Returns true if the target is a valid location to attack
 	return false
@@ -114,7 +119,7 @@ func _unhandled_input(event): #On an event not handled by anything else
 			elif canselectedattack(gridchosen):
 				selectedattack(gridchosen)
 			else:
-				clearmove() #Clear the overlay and arrays
+				deselect() #Clear the overlay and arrays
 				OL.set_cellv(gridchosen, GREEN_OL)
 				#var tile=get_cellv(gridchosen)
 				#print("Tile index for "+str(gridchosen) + " is " + str(tile))
@@ -172,7 +177,7 @@ func newturn():
 	for instance in units:
 		instance.newturn()
 	emit_signal("newTurn")
-	clearmove()
+	deselect()
 
 #func _process(delta):
 #	# Called every frame. Delta is time since last frame.

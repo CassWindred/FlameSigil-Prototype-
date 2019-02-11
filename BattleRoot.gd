@@ -4,7 +4,7 @@ extends Node2D
 # var a = 2
 # var b = "textvar"
 onready var BattleMap=get_node("BattleMap")
-var selectedunit=null
+var selectedunit
 
 func _ready():
 	# Called when the node is added to the scene for the first time.
