@@ -16,16 +16,21 @@ onready var BLUE_OL =OL.tile_set.find_tile_by_name("Blue")
 onready var LIGHTBLUE_OL =OL.tile_set.find_tile_by_name("LightBlue")
 
 signal unitSelect(gridloc, MovRange, AttRange) 
-var sizex=20
-var sizey=30
-onready var square_nodes = []
+export (int) var sizex=20
+export (int) var sizey=30
+
+onready var movecosts = []
+onready var unitlocations = []
+
 onready var UnitGui = get_node("../CanvasLayer/UnitGui")
 
-var move_array = []
-var attack_array = []
+var move_range = {}
+var attack_range = []
 var selected
 var factions = []
 var units = []
+
+var TESTVAR = 0 # Plz remove
 
 signal newTurn() #Autolinked to EndTurnButton
 signal anyUnitSelected()
@@ -44,67 +49,46 @@ func _ready():
 	
 	
 
-	for instance in units:
-		instance.connect("unitSelect", self, "_on_unit_select")
+
 
 	#get_parent().get_node("Units").get_node("UnitWarrior").connect("unitSelect", self, "_onUnitSelect")
-	square_nodes.resize(sizex)
+	movecosts.resize(sizex)
 	for x in range(sizex):
-		square_nodes[x]=[]
-		square_nodes[x].resize(sizey)
+		movecosts[x]=[]
+		movecosts[x].resize(sizey)
 		for y in range(sizey):
-			square_nodes[x][y] = {}
-			square_nodes[x][y]["dist"]=9999 #Initialise to obscenely large distance, equivalent to infinity
 			var tile=get_cell(x,y)
 			
 			if tile==TILE_TREE:
-				square_nodes[x][y]["passable"]=false
+				movecosts[x][y]= -1 #THE VALUE HERE REPRESENTS THE COST TO MOVE THERE, -2 IS IMPASSABLE, -1 IS ONLY PASSABLE FOR FLYERS
 			else:
-				square_nodes[x][y]["passable"]=true
+				movecosts[x][y]=1
 			
-	
+	unitlocations.resize(sizex)
+	for x in range(sizex):
+		unitlocations[x]=[]
+		unitlocations[x].resize(sizey)
+		
+	for instance in units:
+		instance.connect("unitSelect", self, "_on_unit_select")
+		#unitlocations[instance.startlocation.x][instance.startlocation.y]=instance
 
 func _on_unit_select(gridloc, unit):
 	deselect()
 	var AttRange=unit.AttRange
 	var MovRange=unit.MovRemain
-	move_array=rangefind(gridloc,MovRange,square_nodes.duplicate())
-	attack_array=rangefind(gridloc,AttRange+MovRange,square_nodes.duplicate())
-	#print(str(square_nodes[1][0]["dist"]))
-	var TempAttack = []
+	findrange(gridloc,MovRange)
+	print(TESTVAR)
 	
-	for i in attack_array: #Remove everything in move_array from attack_array
-		if not i in move_array:
-			TempAttack.append(i)
-	attack_array=TempAttack
-	
-	#print("Attack Array is: ", str(attack_array))
-	#print("Move Array is: ", str(move_array))
-	for i in move_array:
-		OL.set_cellv(i, BLUE_OL) #Set in range tiles as blue
-	for i in attack_array:
+	#print("Attack Array is: ", str(attack_range))
+	#print("Move Array is: ", str(move_range))
+	for i in attack_range:
 		OL.set_cellv(i, RED_OL)
+	for i in move_range.keys():
+		OL.set_cellv(i, BLUE_OL) #Set in range tiles as blue
+
 	selected=unit
 	emit_signal("anyUnitSelected",unit)
-		
-		
-func deselect(): #Clears the overlay and the attack and move array
-	attack_array = []
-	move_array = []
-	OL.clear()
-	emit_signal("unitDeselect")
-	
-func moveselected(target):
-	selected.rect_global_position=map_to_world(target)
-	selected.MovRemain += -(square_nodes[target.x][target.y]["dist"])
-	deselect()
-	
-func canselectedattack(target): #Returns true if the target is a valid location to attack
-	return false
-	
-func selectedattack(target):
-	pass
-
 	
 func _unhandled_input(event): #On an event not handled by anything else
 	if event is InputEventMouseButton or event is InputEventScreenTouch:
@@ -114,65 +98,44 @@ func _unhandled_input(event): #On an event not handled by anything else
 		elif Input.is_action_just_released("ui_click") and recentclickdown==world_to_map(get_global_mouse_position()):
 			var gridchosen
 			gridchosen=world_to_map(get_global_mouse_position()) #Finds which grid tile the mouse is at
-			if gridchosen in move_array:
+			if gridchosen in move_range:
 				moveselected(gridchosen)
 			elif canselectedattack(gridchosen):
 				selectedattack(gridchosen)
 			else:
 				deselect() #Clear the overlay and arrays
 				OL.set_cellv(gridchosen, GREEN_OL)
-				#var tile=get_cellv(gridchosen)
-				#print("Tile index for "+str(gridchosen) + " is " + str(tile))
-				#if square_nodes[gridchosen.x][gridchosen.y]["passable"]==true:
+				var tile=get_cellv(gridchosen)
+				print("Tile index for "+str(gridchosen) + " is " + str(tile))
+				#if movecosts[gridchosen.x][gridchosen.y]["passable"]==true:
 				#	print("Passable")
 				#else:
 				#	print("Not Passable")
 				
-func rangefind(stloc, gridrange, Nodes): #Start Location and Range to find
-	#print(str(Nodes[1][0]["dist"]))
-	for x in Nodes:
-		for y in x:
-			y["dist"]=9999
-	var toExplore=[]
-	var inRange=[]
-	Nodes[stloc.x][stloc.y]["dist"]=0
-	toExplore.append(stloc)
-	inRange.append(stloc)
-	var curr_range=0
-	
-	while curr_range<=gridrange:
-		var currExplore=toExplore
-		
-		for i in currExplore: #Checks through every location that needs to be explored
-		
-			for modnum in range (-1,2,2):
 				
-				#Check if node is passable and that new distance would be lower than old distance
-				if not (i.x+modnum>=sizex or i.x+modnum<0): #Check that location is within bounds
-					if Nodes[i.x+modnum][i.y]["passable"]==true:
-						var newdist=Nodes[i.x+modnum][i.y]["dist"]
-						var olddist=Nodes[i.x][i.y]["dist"]+1
-						
-						if Nodes[i.x+modnum][i.y]["dist"]>Nodes[i.x][i.y]["dist"]+1:
-							toExplore.append(Vector2(i.x+modnum,i.y))
-							Nodes[i.x+modnum][i.y]["dist"]=Nodes[i.x][i.y]["dist"]+1
-							if Nodes[i.x+modnum][i.y]["dist"]<=gridrange:
-								#print("Adding to inRange")
-								inRange.append(Vector2(i.x+modnum,i.y))
-								
-				if not (i.y+modnum>=sizey or i.y+modnum<0): #Check that location is within bounds
-					if Nodes[i.x][i.y+modnum]["passable"]==true:
-						if Nodes[i.x][i.y+modnum]["dist"]>Nodes[i.x][i.y]["dist"]+1:
-							toExplore.append(Vector2(i.x,i.y+modnum))
-							Nodes[i.x][i.y+modnum]["dist"]=Nodes[i.x][i.y]["dist"]+1
-							if Nodes[i.x][i.y+modnum]["dist"]<=gridrange:
-								#print("Adding to inRange")
-								inRange.append(Vector2(i.x,i.y+modnum))
-			toExplore.erase(i)
-		curr_range+=1
-	return inRange
-			
-			
+func _on_EndTurnButton_pressed():
+	newturn()
+
+func deselect(): #Clears the overlay and the attack and move array
+	attack_range = []
+	move_range = {}
+	OL.clear()
+	emit_signal("unitDeselect")
+	
+func moveselected(target):
+	var oldloc=selected.getlocation()
+	unitlocations[oldloc.x][oldloc.y] = null
+	unitlocations[target.x][target.y]=selected
+	selected.rect_global_position=map_to_world(target)#physically move the node
+	selected.MovRemain += -(move_range[target])
+	deselect()
+	
+func canselectedattack(target): #Returns true if the target is a valid location to attack
+	return false
+	
+func selectedattack(target):
+	pass
+
 func newturn():
 	for instance in units:
 		instance.newturn()
@@ -185,12 +148,37 @@ func newturn():
 #	pass
 
 
+func findrange(origin, mov, flying=false):
+	mov+=1
+	var toexplore=[origin] #This is all the squares that need to be searched
+	var dists = [] #This stores the distance to a square calculated so far
+	
+	dists.resize(sizex)
+	for x in range(sizex):
+		dists[x]=[]
+		dists[x].resize(sizey)
+		for y in range(sizey):
+			dists[x][y]=999999
+	dists[origin.x][origin.y]=0
+	
+	for SEARCHPOINT in range(mov):
+		for node in toexplore.duplicate():
+			var nodedist=dists[node.x][node.y]
+			var targets=[Vector2(node.x+1,node.y), Vector2(node.x-1,node.y), Vector2(node.x,node.y+1), Vector2(node.x,node.y-1)]
+			for target in targets:
+				if target.x>=0 and target.x<sizex and target.y>=0 and target.y<sizey:
+					var movecost=movecosts[target.x][target.y]
+					if (flying==false and movecost!=-1) and movecost!=-2 and nodedist+movecost<mov: #-1 can be passed by flying
+						if dists[target.x][target.y]>nodedist+movecost:
+							dists[target.x][target.y]=nodedist+movecost
+							toexplore.append(target)
+							move_range[target]=nodedist+movecost
+					else:
+						attack_range.append(target)
+			toexplore.erase(node)
+				
+		
 
 
 
 
-
-
-
-func _on_EndTurnButton_pressed():
-	newturn()
