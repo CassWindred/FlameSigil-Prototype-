@@ -1,0 +1,44 @@
+---SWORDS
+Bronze_Sword
+Type: Sword
+Rank: E
+Uses: 50
+Mt: 3
+Hit: 100
+Crt: 0
+Range: 1
+Special: NONE
+Cost: 350
+---LANCES
+Bronze_Lance
+Type: Lance
+Rank: E
+Uses: 50
+Mt: 3
+Hit: 90
+Crt: 0
+Range: 1
+Special: NONE
+Cost: 350
+---BOWS
+Bronze_Bow
+Type: Bow
+Rank: E
+Uses: 50
+Mt: 3
+Hit: 90
+Crt: 0
+Range: 2
+Special: NONE
+Cost: 350
+===END
+Bronze_Lance
+Type:
+Rank:
+Uses:
+Mt:
+Hit:
+Crt:
+Range:
+Special:
+Cost:

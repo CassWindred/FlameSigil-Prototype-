@@ -24,6 +24,7 @@ func _on_unit_select(unit):
 	$"Panel/VBoxContainer/LCKTEXT".text="Lck: "+str(unit.stats["Lck"])
 	$"Panel/VBoxContainer/DEFTEXT".text="Def: "+str(unit.stats["Def"])
 	$"Panel/VBoxContainer/RESTEXT".text="Res: "+str(unit.stats["Res"])
+	$"Panel/VBoxContainer/ITEMTEXT".text="Items: "+str(unit.stats["Weapons"])
 	show()
 func _on_deselect():
 	hide()

@@ -23,6 +23,7 @@ onready var movecosts = []
 onready var unitlocations = []
 
 onready var UnitGui = get_node("../CanvasLayer/UnitGui")
+onready var FightMan = get_node("../FightManager")
 
 var move_range = {}
 var attack_range = []
@@ -30,7 +31,6 @@ var selected
 var factions = []
 var units = []
 
-var TESTVAR = 0 # Plz remove
 
 signal newTurn() #Autolinked to EndTurnButton
 signal anyUnitSelected()
@@ -74,21 +74,24 @@ func _ready():
 		#unitlocations[instance.startlocation.x][instance.startlocation.y]=instance
 
 func _on_unit_select(gridloc, unit):
-	deselect()
-	var AttRange=unit.AttRange
-	var MovRange=unit.MovRemain
-	findrange(gridloc,MovRange)
-	print(TESTVAR)
-	
-	#print("Attack Array is: ", str(attack_range))
-	#print("Move Array is: ", str(move_range))
-	for i in attack_range:
-		OL.set_cellv(i, RED_OL)
-	for i in move_range.keys():
-		OL.set_cellv(i, BLUE_OL) #Set in range tiles as blue
+	if canselectedattack(gridloc) and gridloc!=selected.getlocation():
+		selectedattack(gridloc)
+	else:
+		deselect()
+		var AttRange=unit.AttRange
+		var MovRange=unit.MovRemain
+		findrange(gridloc,MovRange)
 
-	selected=unit
-	emit_signal("anyUnitSelected",unit)
+		
+		#print("Attack Array is: ", str(attack_range))
+		#print("Move Array is: ", str(move_range))
+		for i in attack_range:
+			OL.set_cellv(i, RED_OL)
+		for i in move_range.keys():
+			OL.set_cellv(i, BLUE_OL) #Set in range tiles as blue
+	
+		selected=unit
+		emit_signal("anyUnitSelected",unit)
 	
 func _unhandled_input(event): #On an event not handled by anything else
 	if event is InputEventMouseButton or event is InputEventScreenTouch:
@@ -100,6 +103,7 @@ func _unhandled_input(event): #On an event not handled by anything else
 			gridchosen=world_to_map(get_global_mouse_position()) #Finds which grid tile the mouse is at
 			if gridchosen in move_range:
 				moveselected(gridchosen)
+				deselect()
 			elif canselectedattack(gridchosen):
 				selectedattack(gridchosen)
 			else:
@@ -128,13 +132,29 @@ func moveselected(target):
 	unitlocations[target.x][target.y]=selected
 	selected.rect_global_position=map_to_world(target)#physically move the node
 	selected.MovRemain += -(move_range[target])
-	deselect()
 	
 func canselectedattack(target): #Returns true if the target is a valid location to attack
+	if unitlocations[target.x][target.y]!=null and selected!=null and (target in move_range or target in attack_range):
+		print(unitlocations[target.x][target.y].get_parent())
+		print(selected.get_parent().EnemyList)
+		
+		if unitlocations[target.x][target.y].get_parent() in selected.get_parent().EnemyList:
+			return true
 	return false
 	
 func selectedattack(target):
-	pass
+	print("Doing selectedattack")
+	print("Selected is: "+str(selected))
+	var neighbours=[Vector2(target.x+1,target.y), Vector2(target.x-1,target.y), Vector2(target.x,target.y+1), Vector2(target.x,target.y-1)]
+	if selected.getlocation() in neighbours:
+		FightMan.initbattle(selected,unitlocations[target.x][target.y])
+		return
+	else:
+		for i in move_range:
+			if i in neighbours:
+				moveselected(i)
+				FightMan.initbattle(selected,unitlocations[target.x][target.y])
+				return
 
 func newturn():
 	for instance in units:

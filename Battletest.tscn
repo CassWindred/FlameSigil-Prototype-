@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=2]
+[gd_scene load_steps=13 format=2]
 
 [ext_resource path="res://BattleRoot.gd" type="Script" id=1]
 [ext_resource path="res://Resources/End Turn.png" type="Texture" id=2]
@@ -10,6 +10,7 @@
 [ext_resource path="res://Faction.tscn" type="PackedScene" id=8]
 [ext_resource path="res://Unitscript.tscn" type="PackedScene" id=9]
 [ext_resource path="res://BattleCamera.gd" type="Script" id=10]
+[ext_resource path="res://FightManager.gd" type="Script" id=11]
 
 [sub_resource type="StyleBoxFlat" id=1]
 
@@ -98,8 +99,8 @@ anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = -105.0
-margin_top = -163.0
+margin_left = -172.0
+margin_top = -182.0
 rect_pivot_offset = Vector2( 0, 0 )
 rect_clip_content = false
 mouse_filter = 0
@@ -116,8 +117,8 @@ anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
 margin_left = 8.0
-margin_right = 105.0
-margin_bottom = 163.0
+margin_right = 172.0
+margin_bottom = 182.0
 rect_pivot_offset = Vector2( 0, 0 )
 rect_clip_content = false
 mouse_filter = 0
@@ -129,7 +130,6 @@ _sections_unfolded = [ "Anchor", "Rect", "Visibility", "custom_styles" ]
 
 [node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/UnitGui/Panel" index="0"]
 
-editor/display_folded = true
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 1.0
@@ -148,7 +148,7 @@ anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
-margin_right = 97.0
+margin_right = 164.0
 margin_bottom = 14.0
 rect_pivot_offset = Vector2( 0, 0 )
 rect_clip_content = false
@@ -169,7 +169,7 @@ anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
 margin_top = 18.0
-margin_right = 97.0
+margin_right = 164.0
 margin_bottom = 32.0
 rect_pivot_offset = Vector2( 0, 0 )
 rect_clip_content = false
@@ -189,7 +189,7 @@ anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
 margin_top = 36.0
-margin_right = 97.0
+margin_right = 164.0
 margin_bottom = 50.0
 rect_pivot_offset = Vector2( 0, 0 )
 rect_clip_content = false
@@ -210,7 +210,7 @@ anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
 margin_top = 54.0
-margin_right = 97.0
+margin_right = 164.0
 margin_bottom = 68.0
 rect_pivot_offset = Vector2( 0, 0 )
 rect_clip_content = false
@@ -231,7 +231,7 @@ anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
 margin_top = 72.0
-margin_right = 97.0
+margin_right = 164.0
 margin_bottom = 86.0
 rect_pivot_offset = Vector2( 0, 0 )
 rect_clip_content = false
@@ -251,7 +251,7 @@ anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
 margin_top = 90.0
-margin_right = 97.0
+margin_right = 164.0
 margin_bottom = 104.0
 rect_pivot_offset = Vector2( 0, 0 )
 rect_clip_content = false
@@ -271,7 +271,7 @@ anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
 margin_top = 108.0
-margin_right = 97.0
+margin_right = 164.0
 margin_bottom = 122.0
 rect_pivot_offset = Vector2( 0, 0 )
 rect_clip_content = false
@@ -291,7 +291,7 @@ anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
 margin_top = 126.0
-margin_right = 97.0
+margin_right = 164.0
 margin_bottom = 140.0
 rect_pivot_offset = Vector2( 0, 0 )
 rect_clip_content = false
@@ -311,7 +311,7 @@ anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
 margin_top = 144.0
-margin_right = 97.0
+margin_right = 164.0
 margin_bottom = 158.0
 rect_pivot_offset = Vector2( 0, 0 )
 rect_clip_content = false
@@ -320,6 +320,25 @@ mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 4
 text = "HP:"
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="ITEMTEXT" type="Label" parent="CanvasLayer/UnitGui/Panel/VBoxContainer" index="9"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 162.0
+margin_right = 164.0
+margin_bottom = 176.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 2
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 4
 percent_visible = 1.0
 lines_skipped = 0
 max_lines_visible = -1
@@ -419,6 +438,10 @@ editor_draw_limits = false
 editor_draw_drag_margin = false
 script = ExtResource( 10 )
 _sections_unfolded = [ "Limit" ]
+
+[node name="FightManager" type="Node" parent="." index="4"]
+
+script = ExtResource( 11 )
 
 [connection signal="pressed" from="CanvasLayer/TopGui/EndTurnButton" to="BattleMap" method="_on_EndTurnButton_pressed"]
 

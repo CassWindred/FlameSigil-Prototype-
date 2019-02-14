@@ -14,10 +14,15 @@ config/name="FlameSigil"
 run/main_scene="res://Battletest.tscn"
 config/icon="res://icon.png"
 
+[autoload]
+
+StatManager="*res://StatManager.gd"
+
 [display]
 
 window/size/width=748
 window/size/height=1334
+window/handheld/orientation="portrait"
 window/handheld/emulate_touchscreen=true
 window/stretch/shrink="1"
 
